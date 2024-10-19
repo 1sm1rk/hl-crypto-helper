@@ -42,12 +42,15 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
  */
 public class ECIESCipherTool {
 	
-	KeyPair myKey;
-	PublicKey pubKey;
-	PrivateKey privKey;
+	private KeyPair myKey;
+	private PublicKey pubKey;
+	private PrivateKey privKey;
+	
 	private Boolean initSuccessfull = false;
 	private String exceptionMsg;
 	private static final ECIESCipherTool instance = new ECIESCipherTool();
+	
+	private final String transformation = "ECIES/None/NoPadding";
 	
 	//avoid instantiation
 	private ECIESCipherTool() {
@@ -80,7 +83,7 @@ public class ECIESCipherTool {
 		
 		try {
 			
-			keyGen 	= KeyPairGenerator.getInstance("EC", "BC");
+			keyGen 	= KeyPairGenerator.getInstance(transformation, "BC");
 			eccSpec = new ECGenParameterSpec("secp256k1");
 			keyGen.initialize(eccSpec);
 			this.myKey = keyGen.generateKeyPair();
@@ -107,7 +110,7 @@ public class ECIESCipherTool {
 		
 		Cipher cipher;
 		try {
-			cipher = Cipher.getInstance("ECIES", "BC");
+			cipher = Cipher.getInstance(transformation, "BC");
 			cipher.init(Cipher.ENCRYPT_MODE, this.pubKey);
 			byte[] encryptedMessage = cipher.doFinal(message.getBytes());
 			return new ECIESCipherResult(true, "OK", encryptedMessage);
@@ -130,7 +133,7 @@ public class ECIESCipherTool {
 		
 		Cipher cipher;
 		try {
-			cipher = Cipher.getInstance("ECIES", "BC");
+			cipher = Cipher.getInstance(transformation, "BC");
 			cipher.init(Cipher.ENCRYPT_MODE, this.pubKey);
 			byte[] encryptedMessage = cipher.doFinal(message);
 			return new ECIESCipherResult(true, "OK", encryptedMessage);
@@ -153,8 +156,8 @@ public class ECIESCipherTool {
 		
 		Cipher cipher;
 		try {
-			cipher = Cipher.getInstance("ECIES", "BC");
-			cipher.init(Cipher.DECRYPT_MODE, this.pubKey);
+			cipher = Cipher.getInstance(transformation, "BC");
+			cipher.init(Cipher.DECRYPT_MODE, this.privKey);
 			byte[] encryptedMessage = cipher.doFinal(message.getBytes());
 			return new ECIESCipherResult(true, "OK", encryptedMessage);
 		} catch (NoSuchAlgorithmException | NoSuchProviderException 
@@ -176,8 +179,8 @@ public class ECIESCipherTool {
 		
 		Cipher cipher;
 		try {
-			cipher = Cipher.getInstance("ECIES", "BC");
-			cipher.init(Cipher.DECRYPT_MODE, this.pubKey);
+			cipher = Cipher.getInstance(transformation, "BC");
+			cipher.init(Cipher.DECRYPT_MODE, this.privKey);
 			byte[] encryptedMessage = cipher.doFinal(message);
 			return new ECIESCipherResult(true, "OK", encryptedMessage);
 		} catch (NoSuchAlgorithmException | NoSuchProviderException 
@@ -194,7 +197,7 @@ public class ECIESCipherTool {
 	 */
 	public int checkMaxAllowedKeyLength() {
 		try {
-			return Cipher.getMaxAllowedKeyLength("ECIES");
+			return Cipher.getMaxAllowedKeyLength(transformation);
 		} catch (NoSuchAlgorithmException e) {
 			return 0;
 		}
