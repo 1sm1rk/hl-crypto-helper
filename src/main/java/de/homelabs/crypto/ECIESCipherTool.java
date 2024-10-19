@@ -46,11 +46,11 @@ public class ECIESCipherTool {
 	private PublicKey pubKey;
 	private PrivateKey privKey;
 	
-	private Boolean initSuccessfull = false;
+	private boolean initSuccessfull = false;
 	private String exceptionMsg;
 	private static final ECIESCipherTool instance = new ECIESCipherTool();
 	
-	private final String transformation = "ECIES/None/NoPadding";
+	private static final String transformation = "ECIES/None/NoPadding";
 	
 	//avoid instantiation
 	private ECIESCipherTool() {
